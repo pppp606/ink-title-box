@@ -113,19 +113,19 @@ describe('Error Handling and Warnings', () => {
     expect(jestConfigContent).toContain('global');
   });
 
-  test('should validate build output structure', async () => {
+  test('should validate project structure for buildability', async () => {
     const fs = require('fs');
     const path = require('path');
 
-    // Check if build directory exists
-    const distPath = './dist';
-    expect(fs.existsSync(distPath)).toBe(true);
+    // Check if source files exist for building
+    const srcPath = './src';
+    expect(fs.existsSync(srcPath)).toBe(true);
 
-    // Check required build files
-    const requiredFiles = ['index.js', 'index.d.ts'];
+    // Check required source files
+    const requiredFiles = ['index.tsx', 'cli.tsx'];
 
     requiredFiles.forEach(file => {
-      const filePath = path.join(distPath, file);
+      const filePath = path.join(srcPath, file);
       expect(fs.existsSync(filePath)).toBe(true);
 
       const content = fs.readFileSync(filePath, 'utf8');

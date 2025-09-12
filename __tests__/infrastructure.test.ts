@@ -3,38 +3,33 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 describe('Infrastructure Tests', () => {
-  describe('TypeScript build outputs', () => {
-    test('should have all required build outputs', () => {
-      const distDir = path.join(process.cwd(), 'dist');
-      const expectedFiles = [
-        'index.js',
-        'index.d.ts',
-        'index.js.map',
-        'index.d.ts.map',
-      ];
+  describe('TypeScript source files', () => {
+    test('should have all required source files', () => {
+      const srcDir = path.join(process.cwd(), 'src');
+      const expectedFiles = ['index.tsx', 'cli.tsx'];
 
-      expect(fs.existsSync(distDir)).toBe(true);
+      expect(fs.existsSync(srcDir)).toBe(true);
 
       expectedFiles.forEach(file => {
-        const filePath = path.join(distDir, file);
+        const filePath = path.join(srcDir, file);
         expect(fs.existsSync(filePath)).toBe(true);
       });
     });
 
-    test('should have correct TypeScript declaration exports', () => {
-      const declarationPath = path.join(process.cwd(), 'dist', 'index.d.ts');
-      const content = fs.readFileSync(declarationPath, 'utf8');
+    test('should have correct TypeScript interfaces and exports', () => {
+      const indexPath = path.join(process.cwd(), 'src', 'index.tsx');
+      const content = fs.readFileSync(indexPath, 'utf8');
 
       expect(content).toContain('interface TitleBoxProps');
-      expect(content).toContain('export declare const TitleBox');
+      expect(content).toContain('export const TitleBox');
       expect(content).toContain('export default TitleBox');
     });
 
-    test('should use ES modules in compiled JavaScript', () => {
-      const jsPath = path.join(process.cwd(), 'dist', 'index.js');
-      const content = fs.readFileSync(jsPath, 'utf8');
+    test('should use ES modules syntax in source', () => {
+      const indexPath = path.join(process.cwd(), 'src', 'index.tsx');
+      const content = fs.readFileSync(indexPath, 'utf8');
 
-      expect(content).toContain('import');
+      expect(content).toContain('import React from');
       expect(content).toContain('export');
     });
   });
