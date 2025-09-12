@@ -135,28 +135,23 @@ jobs:
         run: npm ci --prefer-offline --no-audit
 
       - name: Run security audit
-        run: npm audit --audit-level=high
-
-  # Dependency review job - for public repos with dependency graph enabled
-  dependency-review:
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    continue-on-error: true  # Don't fail the entire pipeline if this fails
-
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-          comment-summary-in-pr: true
+        run: |
+          echo "🔍 Running npm audit..."
+          npm audit --audit-level=high
+          
+      - name: Check for known vulnerabilities
+        run: |
+          echo "📊 Generating audit report..."
+          npm audit --json > audit-report.json || true
+          if [ -s audit-report.json ]; then
+            echo "Audit report generated successfully"
+            cat audit-report.json | jq '.vulnerabilities | length' || echo "jq not available"
+          fi
+          
+      - name: List production dependencies
+        run: |
+          echo "📦 Production dependencies:"
+          npm ls --prod --depth=0 || true
 
   # Integration job - combines all checks
   integration:
