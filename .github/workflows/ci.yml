@@ -138,7 +138,7 @@ jobs:
         run: |
           echo "🔍 Running npm audit..."
           npm audit --audit-level=high
-          
+
       - name: Check for known vulnerabilities
         run: |
           echo "📊 Generating audit report..."
@@ -147,7 +147,7 @@ jobs:
             echo "Audit report generated successfully"
             cat audit-report.json | jq '.vulnerabilities | length' || echo "jq not available"
           fi
-          
+
       - name: List production dependencies
         run: |
           echo "📦 Production dependencies:"
