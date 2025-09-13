@@ -17,9 +17,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support ascii border style', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'ASCII Test', 
-        borderStyle: 'ascii' 
+      const result = TitleBox({
+        title: 'ASCII Test',
+        borderStyle: 'ascii',
       });
 
       expect(result.props.borderStyle).toBe('ascii');
@@ -28,9 +28,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support single border style', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Single Test', 
-        borderStyle: 'single' 
+      const result = TitleBox({
+        title: 'Single Test',
+        borderStyle: 'single',
       });
 
       expect(result.props.borderStyle).toBe('single');
@@ -39,9 +39,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support double border style', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Double Test', 
-        borderStyle: 'double' 
+      const result = TitleBox({
+        title: 'Double Test',
+        borderStyle: 'double',
       });
 
       expect(result.props.borderStyle).toBe('double');
@@ -50,9 +50,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support round border style', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Round Test', 
-        borderStyle: 'round' 
+      const result = TitleBox({
+        title: 'Round Test',
+        borderStyle: 'round',
       });
 
       expect(result.props.borderStyle).toBe('round');
@@ -71,9 +71,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support left title alignment', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Left Title', 
-        titleAlign: 'left' 
+      const result = TitleBox({
+        title: 'Left Title',
+        titleAlign: 'left',
       });
 
       expect(result.type).toBe(mockBox);
@@ -84,9 +84,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support center title alignment', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Center Title', 
-        titleAlign: 'center' 
+      const result = TitleBox({
+        title: 'Center Title',
+        titleAlign: 'center',
       });
 
       expect(result.type).toBe(mockBox);
@@ -97,9 +97,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support right title alignment', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Right Title', 
-        titleAlign: 'right' 
+      const result = TitleBox({
+        title: 'Right Title',
+        titleAlign: 'right',
       });
 
       expect(result.type).toBe(mockBox);
@@ -122,9 +122,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support top title position', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Top Title', 
-        titlePosition: 'top' 
+      const result = TitleBox({
+        title: 'Top Title',
+        titlePosition: 'top',
       });
 
       expect(result.type).toBe(mockBox);
@@ -135,9 +135,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support bottom title position', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Bottom Title', 
-        titlePosition: 'bottom' 
+      const result = TitleBox({
+        title: 'Bottom Title',
+        titlePosition: 'bottom',
       });
 
       expect(result.type).toBe(mockBox);
@@ -160,9 +160,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support paddingX', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'PaddingX Test', 
-        paddingX: 3 
+      const result = TitleBox({
+        title: 'PaddingX Test',
+        paddingX: 3,
       });
 
       expect(result.props.paddingLeft).toBe(3);
@@ -172,9 +172,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support paddingY', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'PaddingY Test', 
-        paddingY: 2 
+      const result = TitleBox({
+        title: 'PaddingY Test',
+        paddingY: 2,
       });
 
       expect(result.props.paddingTop).toBe(2);
@@ -184,10 +184,10 @@ describe('TitleBox Enhanced Features', () => {
     test('should support both paddingX and paddingY', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Both Paddings', 
-        paddingX: 4, 
-        paddingY: 2 
+      const result = TitleBox({
+        title: 'Both Paddings',
+        paddingX: 4,
+        paddingY: 2,
       });
 
       expect(result.props.paddingLeft).toBe(4);
@@ -199,9 +199,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should use legacy padding when paddingX/Y not specified', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: 'Legacy Padding', 
-        padding: 3 
+      const result = TitleBox({
+        title: 'Legacy Padding',
+        padding: 3,
       });
 
       expect(result.props.paddingLeft).toBe(3);
@@ -216,10 +216,10 @@ describe('TitleBox Enhanced Features', () => {
       const { TitleBox } = await import('../src/index.js');
 
       const longTitle = 'This is a very long title that should be truncated';
-      const result = TitleBox({ 
-        title: longTitle, 
-        width: 20, 
-        truncate: true 
+      const result = TitleBox({
+        title: longTitle,
+        width: 20,
+        truncate: true,
       });
 
       expect(result.type).toBe(mockBox);
@@ -241,9 +241,9 @@ describe('TitleBox Enhanced Features', () => {
     test('should support fullWidthSafe mode', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const result = TitleBox({ 
-        title: '日本語タイトル', 
-        fullWidthSafe: true 
+      const result = TitleBox({
+        title: '日本語タイトル',
+        fullWidthSafe: true,
       });
 
       expect(result.type).toBe(mockBox);
@@ -267,9 +267,9 @@ describe('TitleBox Enhanced Features', () => {
       const { TitleBox } = await import('../src/index.js');
 
       const titles = ['Left Title', 'Right Title'];
-      const result = TitleBox({ 
-        titles: titles, 
-        titleAlign: 'space-between' 
+      const result = TitleBox({
+        titles: titles,
+        titleAlign: 'space-between',
       });
 
       expect(result.type).toBe(mockBox);
@@ -282,9 +282,9 @@ describe('TitleBox Enhanced Features', () => {
       const { TitleBox } = await import('../src/index.js');
 
       const titles = ['Multi Title 1', 'Multi Title 2'];
-      const result = TitleBox({ 
+      const result = TitleBox({
         title: 'Single Title',
-        titles: titles 
+        titles: titles,
       });
 
       expect(result.type).toBe(mockBox);
@@ -299,9 +299,9 @@ describe('TitleBox Enhanced Features', () => {
 
       // Mock TitleBox.Title component
       const TitleComponent = React.createElement('span', {}, 'Custom Title');
-      
-      const result = TitleBox({ 
-        children: TitleComponent 
+
+      const result = TitleBox({
+        children: TitleComponent,
       });
 
       expect(result.props.children).toBe(TitleComponent);
@@ -310,13 +310,17 @@ describe('TitleBox Enhanced Features', () => {
     test('should support flexible title positioning with Title slot', async () => {
       const { TitleBox } = await import('../src/index.js');
 
-      const CustomTitle = React.createElement('div', { 
-        style: { display: 'flex', justifyContent: 'space-between' } 
-      }, ['Left', 'Right']);
-      
-      const result = TitleBox({ 
+      const CustomTitle = React.createElement(
+        'div',
+        {
+          style: { display: 'flex', justifyContent: 'space-between' },
+        },
+        ['Left', 'Right']
+      );
+
+      const result = TitleBox({
         children: CustomTitle,
-        titlePosition: 'top'
+        titlePosition: 'top',
       });
 
       expect(result.props.children).toBe(CustomTitle);
@@ -337,7 +341,7 @@ describe('TitleBox Enhanced Features', () => {
         paddingY: 1,
         truncate: true,
         fullWidthSafe: true,
-        width: 50
+        width: 50,
       });
 
       expect(result.props.borderStyle).toBe('double');

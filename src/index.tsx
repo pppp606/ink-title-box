@@ -128,7 +128,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
 
   return (
     <Box
-      borderStyle={borderStyle as any}
+      borderStyle={borderStyle}
       borderColor={borderColor}
       width={width}
       paddingLeft={finalPaddingX}
