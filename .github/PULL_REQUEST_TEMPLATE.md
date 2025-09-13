@@ -1,32 +1,32 @@
-## 開発理由
+## Summary
 
-<!-- 必須 -->
-<!-- 開発した理由を簡潔に記載する。 -->
+<!-- Required -->
+<!-- Briefly describe the reason for this development. -->
 
-## 開発内容
+## Changes
 
-<!-- 必須 -->
-<!-- どのような開発をしたのか簡潔に記載する。 -->
+<!-- Required -->
+<!-- Briefly describe what changes were made. -->
 
 - [ ] xxx
 
-## 影響内容
+## Impact
 
-<!-- 必須 -->
-<!-- 開発によってどのような影響があるか、簡潔に記載する。 -->
+<!-- Required -->
+<!-- Briefly describe the impact of these changes. -->
 
-## 関連issue/リンク
+## Related Issues/Links
 
-<!-- Pull Requestと関連するIssueリンクを記載する。 -->
+<!-- List any related Issue links for this Pull Request. -->
 
 - xxx
 
-## 変更前後のスクリーンショット
+## Screenshots (Before/After)
 
-<!-- 開発によってスクリーンショットが必要な場合は添付する。 -->
+<!-- Include screenshots if the changes affect the UI. -->
 
-## 検証
+## Testing
 
-<!-- 開発に伴い検証をした場合は、その内容を簡潔に記載する。 -->
+<!-- If testing was performed, briefly describe the testing process. -->
 
 - [ ] xxx

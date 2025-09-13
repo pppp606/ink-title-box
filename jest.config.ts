@@ -47,7 +47,7 @@ const config: Config = {
     '!src/**/*.test.{ts,tsx}',
     '!src/**/__tests__/**',
     '!src/**/__mocks__/**',
-    '!src/cli.tsx', // CLI実行ファイルはカバレッジ対象外
+    '!src/cli.tsx', // CLI executable file excluded from coverage
   ],
 
   // Coverage output directory
@@ -67,7 +67,7 @@ const config: Config = {
     'json-summary',
   ],
 
-  // Coverage thresholds - 現在の実装に適した現実的なしきい値
+  // Coverage thresholds - realistic thresholds suitable for current implementation
   coverageThreshold: {
     global: {
       branches: 50,
@@ -75,7 +75,7 @@ const config: Config = {
       lines: 50,
       statements: 50,
     },
-    // 個別ファイルレベルでのしきい値（開発初期段階に適した値）
+    // Individual file-level thresholds (values suitable for early development stage)
     './src/**/*.{ts,tsx}': {
       branches: 40,
       functions: 40,

@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// CLI実行可能ファイルのパス
+// Path to the CLI executable file
 const cliPath = join(__dirname, 'dist', 'cli.js');
 
 function runDemo(args = []) {
@@ -37,10 +37,10 @@ async function main() {
 
   try {
     if (args.length === 0) {
-      // デフォルトデモ
+      // Default demo
       await runDemo(['Hello, ink-title-box!']);
     } else {
-      // カスタム引数でデモ実行
+      // Run demo with custom arguments
       await runDemo(args);
     }
 
