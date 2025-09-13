@@ -1,38 +1,73 @@
-// Mock Ink dependencies to avoid ESM issues in tests
-jest.mock('ink', () => ({
-  render: jest.fn(),
-}));
+// Test CLI argument parsing logic with validation
+const VALID_COLORS = [
+  'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
+  'gray', 'grey', 'blackBright', 'redBright', 'greenBright', 'yellowBright',
+  'blueBright', 'magentaBright', 'cyanBright', 'whiteBright'
+];
 
-jest.mock('../src/index.js', () => ({
-  TitleBox: jest.fn(() => 'MockedTitleBox'),
-}));
-
-// Import parseArgs function directly by creating a minimal implementation for testing
-const parseArgs = (args: string[]) => {
+// Replicate parseArgs logic for testing (to avoid import.meta issues)
+function parseArgs(args: string[]): any {
   const options: any = {
     title: args[0] || 'Default Title',
   };
 
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
+    const nextArg = args[i + 1];
+    
     switch (arg) {
       case '--width':
       case '-w':
-        options.width = parseInt(args[++i], 10);
+        if (!nextArg) {
+          throw new Error(`${arg} requires a value`);
+        }
+        const width = parseInt(nextArg, 10);
+        if (isNaN(width) || width < 1) {
+          throw new Error(`Width must be a positive number, got: ${nextArg}`);
+        }
+        options.width = Math.min(width, 200);
+        i++;
         break;
+        
       case '--padding':
       case '-p':
-        options.padding = parseInt(args[++i], 10);
+        if (!nextArg) {
+          throw new Error(`${arg} requires a value`);
+        }
+        const padding = parseInt(nextArg, 10);
+        if (isNaN(padding) || padding < 0) {
+          throw new Error(`Padding must be a non-negative number, got: ${nextArg}`);
+        }
+        options.padding = Math.min(padding, 10);
+        i++;
         break;
+        
       case '--color':
       case '-c':
-        options.borderColor = args[++i];
+        if (!nextArg) {
+          throw new Error(`${arg} requires a value`);
+        }
+        if (!VALID_COLORS.includes(nextArg)) {
+          throw new Error(`Invalid color '${nextArg}'. Valid colors: ${VALID_COLORS.join(', ')}`);
+        }
+        options.borderColor = nextArg;
+        i++;
+        break;
+        
+      case '--help':
+      case '-h':
+        break;
+        
+      default:
+        if (arg.startsWith('-')) {
+          throw new Error(`Unknown option: ${arg}. Use --help for usage information.`);
+        }
         break;
     }
   }
 
   return options;
-};
+}
 
 describe('CLI Functions', () => {
   describe('parseArgs', () => {
@@ -116,17 +151,61 @@ describe('CLI Functions', () => {
       expect(result.borderColor).toBe('yellow');
     });
 
-    it('should handle NaN for invalid numeric values', () => {
+    it('should throw error for invalid numeric values', () => {
+      expect(() => {
+        parseArgs(['Title', '--width', 'invalid']);
+      }).toThrow('Width must be a positive number, got: invalid');
+
+      expect(() => {
+        parseArgs(['Title', '--padding', 'bad']);
+      }).toThrow('Padding must be a non-negative number, got: bad');
+    });
+
+    it('should throw error for missing argument values', () => {
+      expect(() => {
+        parseArgs(['Title', '--width']);
+      }).toThrow('--width requires a value');
+
+      expect(() => {
+        parseArgs(['Title', '-p']);
+      }).toThrow('-p requires a value');
+
+      expect(() => {
+        parseArgs(['Title', '--color']);
+      }).toThrow('--color requires a value');
+    });
+
+    it('should throw error for unknown options', () => {
+      expect(() => {
+        parseArgs(['Title', '--unknown']);
+      }).toThrow('Unknown option: --unknown. Use --help for usage information.');
+    });
+
+    it('should throw error for invalid color', () => {
+      expect(() => {
+        parseArgs(['Title', '--color', 'invalidcolor']);
+      }).toThrow("Invalid color 'invalidcolor'");
+    });
+
+    it('should clamp values to reasonable ranges', () => {
       const result = parseArgs([
         'Title',
         '--width',
-        'invalid',
+        '1000',
         '--padding',
-        'bad',
+        '50',
       ]);
-      expect(result.title).toBe('Title');
-      expect(Number.isNaN(result.width)).toBe(true);
-      expect(Number.isNaN(result.padding)).toBe(true);
+
+      expect(result.width).toBe(200); // Clamped to max
+      expect(result.padding).toBe(10); // Clamped to max
+    });
+
+    it('should handle valid colors', () => {
+      const result = parseArgs(['Title', '--color', 'red']);
+      expect(result.borderColor).toBe('red');
+
+      const result2 = parseArgs(['Title', '-c', 'blueBright']);
+      expect(result2.borderColor).toBe('blueBright');
     });
   });
 });

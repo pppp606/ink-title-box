@@ -56,42 +56,15 @@ const config: Config = {
   // Coverage providers - for better performance
   coverageProvider: 'v8',
 
-  // Coverage reporters with options
+  // Coverage reporters
   coverageReporters: [
     'text',
     'text-summary',
-    [
-      'html',
-      {
-        subdir: 'html',
-        skipCovered: false,
-        skipEmpty: false,
-      },
-    ],
-    [
-      'lcov',
-      {
-        outputFile: 'lcov.info',
-      },
-    ],
-    [
-      'json',
-      {
-        outputFile: 'coverage.json',
-      },
-    ],
-    [
-      'clover',
-      {
-        outputFile: 'clover.xml',
-      },
-    ],
-    [
-      'json-summary',
-      {
-        outputFile: 'coverage-summary.json',
-      },
-    ],
+    'html',
+    'lcov',
+    'json',
+    'clover',
+    'json-summary',
   ],
 
   // Coverage thresholds - 現在の実装に適した現実的なしきい値
