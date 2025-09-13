@@ -45,12 +45,7 @@ import { render } from 'ink';
 import { TitleBox } from 'ink-title-box';
 
 const App = () => (
-  <TitleBox
-    title="My Application"
-    width={50}
-    padding={2}
-    borderColor="cyan"
-  />
+  <TitleBox title='My Application' width={50} padding={2} borderColor='cyan' />
 );
 
 render(<App />);
@@ -61,9 +56,9 @@ render(<App />);
 ```typescript
 interface TitleBoxProps {
   title: string;
-  width?: number;        // Box width (default: 40)
-  padding?: number;      // Internal padding (default: 1)
-  borderColor?: string;  // Border color (default: 'blue')
+  width?: number; // Box width (default: 40)
+  padding?: number; // Internal padding (default: 1)
+  borderColor?: string; // Border color (default: 'blue')
 }
 ```
 

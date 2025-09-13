@@ -1,8 +1,23 @@
 // Test CLI argument parsing logic with validation
 const VALID_COLORS = [
-  'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
-  'gray', 'grey', 'blackBright', 'redBright', 'greenBright', 'yellowBright',
-  'blueBright', 'magentaBright', 'cyanBright', 'whiteBright'
+  'black',
+  'red',
+  'green',
+  'yellow',
+  'blue',
+  'magenta',
+  'cyan',
+  'white',
+  'gray',
+  'grey',
+  'blackBright',
+  'redBright',
+  'greenBright',
+  'yellowBright',
+  'blueBright',
+  'magentaBright',
+  'cyanBright',
+  'whiteBright',
 ];
 
 // Replicate parseArgs logic for testing (to avoid import.meta issues)
@@ -14,10 +29,10 @@ function parseArgs(args: string[]): any {
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
     const nextArg = args[i + 1];
-    
+
     switch (arg) {
       case '--width':
-      case '-w':
+      case '-w': {
         if (!nextArg) {
           throw new Error(`${arg} requires a value`);
         }
@@ -28,39 +43,48 @@ function parseArgs(args: string[]): any {
         options.width = Math.min(width, 200);
         i++;
         break;
-        
+      }
+
       case '--padding':
-      case '-p':
+      case '-p': {
         if (!nextArg) {
           throw new Error(`${arg} requires a value`);
         }
         const padding = parseInt(nextArg, 10);
         if (isNaN(padding) || padding < 0) {
-          throw new Error(`Padding must be a non-negative number, got: ${nextArg}`);
+          throw new Error(
+            `Padding must be a non-negative number, got: ${nextArg}`
+          );
         }
         options.padding = Math.min(padding, 10);
         i++;
         break;
-        
+      }
+
       case '--color':
-      case '-c':
+      case '-c': {
         if (!nextArg) {
           throw new Error(`${arg} requires a value`);
         }
         if (!VALID_COLORS.includes(nextArg)) {
-          throw new Error(`Invalid color '${nextArg}'. Valid colors: ${VALID_COLORS.join(', ')}`);
+          throw new Error(
+            `Invalid color '${nextArg}'. Valid colors: ${VALID_COLORS.join(', ')}`
+          );
         }
         options.borderColor = nextArg;
         i++;
         break;
-        
+      }
+
       case '--help':
       case '-h':
         break;
-        
+
       default:
         if (arg.startsWith('-')) {
-          throw new Error(`Unknown option: ${arg}. Use --help for usage information.`);
+          throw new Error(
+            `Unknown option: ${arg}. Use --help for usage information.`
+          );
         }
         break;
     }
@@ -178,7 +202,9 @@ describe('CLI Functions', () => {
     it('should throw error for unknown options', () => {
       expect(() => {
         parseArgs(['Title', '--unknown']);
-      }).toThrow('Unknown option: --unknown. Use --help for usage information.');
+      }).toThrow(
+        'Unknown option: --unknown. Use --help for usage information.'
+      );
     });
 
     it('should throw error for invalid color', () => {
@@ -188,13 +214,7 @@ describe('CLI Functions', () => {
     });
 
     it('should clamp values to reasonable ranges', () => {
-      const result = parseArgs([
-        'Title',
-        '--width',
-        '1000',
-        '--padding',
-        '50',
-      ]);
+      const result = parseArgs(['Title', '--width', '1000', '--padding', '50']);
 
       expect(result.width).toBe(200); // Clamped to max
       expect(result.padding).toBe(10); // Clamped to max
