@@ -123,7 +123,10 @@ describe('TitleBox Module', () => {
     expect(resultWithAllProps.type).toBe(mockBox);
     expect(resultWithAllProps.props.borderColor).toBe('red');
     expect(resultWithAllProps.props.width).toBe(50);
-    expect(resultWithAllProps.props.padding).toBe(2);
+    expect(resultWithAllProps.props.paddingLeft).toBe(2);
+    expect(resultWithAllProps.props.paddingRight).toBe(2);
+    expect(resultWithAllProps.props.paddingTop).toBe(2);
+    expect(resultWithAllProps.props.paddingBottom).toBe(2);
   });
 
   test('should apply default values when props are not provided', async () => {
@@ -137,7 +140,10 @@ describe('TitleBox Module', () => {
     expect(result.props.borderStyle).toBe('round');
     expect(result.props.borderColor).toBe('blue'); // default value
     expect(result.props.width).toBe(40); // default value
-    expect(result.props.padding).toBe(1); // default value
+    expect(result.props.paddingLeft).toBe(1); // default value
+    expect(result.props.paddingRight).toBe(1); // default value
+    expect(result.props.paddingTop).toBe(1); // default value
+    expect(result.props.paddingBottom).toBe(1); // default value
 
     // Should contain Text child with title
     expect(result.props.children).toBeDefined();
@@ -159,7 +165,10 @@ describe('TitleBox Module', () => {
 
     expect(result.props.borderColor).toBe('green');
     expect(result.props.width).toBe(100);
-    expect(result.props.padding).toBe(5);
+    expect(result.props.paddingLeft).toBe(5);
+    expect(result.props.paddingRight).toBe(5);
+    expect(result.props.paddingTop).toBe(5);
+    expect(result.props.paddingBottom).toBe(5);
     expect(result.props.children.props.children).toBe('Custom Props Test');
   });
 });
