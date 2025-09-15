@@ -3,8 +3,9 @@ import React from 'react';
 import { render } from 'ink';
 import { fileURLToPath } from 'url';
 import { TitleBox } from './index.js';
+import stringWidth from 'string-width';
 
-type BorderStyle = 'single' | 'double' | 'round' | 'bold';
+type BorderStyle = 'single' | 'double' | 'round' | 'bold' | 'ascii';
 type TitleAlign = 'left' | 'center' | 'right' | 'space-between';
 type TitlePosition = 'top' | 'bottom';
 
@@ -44,9 +45,163 @@ const VALID_COLORS = [
   'whiteBright',
 ];
 
-const VALID_BORDER_STYLES = ['single', 'double', 'round', 'bold'];
+const VALID_BORDER_STYLES = ['single', 'double', 'round', 'bold', 'ascii'];
 const VALID_TITLE_ALIGNS = ['left', 'center', 'right', 'space-between'];
 const VALID_TITLE_POSITIONS = ['top', 'bottom'];
+
+// Text truncation helper for CLI direct output
+const truncateTextCLI = (text: string, maxWidth: number): string => {
+  if (!maxWidth) return text;
+
+  const textWidth = stringWidth(text);
+  if (textWidth <= maxWidth) return text;
+
+  let truncated = '';
+  let currentWidth = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const charWidth = stringWidth(char);
+
+    // Reserve space for ellipsis (width = 1)
+    if (currentWidth + charWidth > maxWidth - 1) {
+      break;
+    }
+
+    truncated += char;
+    currentWidth += charWidth;
+  }
+
+  return truncated + '…';
+};
+
+// Direct text output generation for extreme widths (bypasses Ink)
+function generateDirectOutput(options: CliOptions): string {
+  const {
+    title = '',
+    titles,
+    width = 40,
+    borderStyle = 'round',
+    titleAlign = 'left',
+    titlePosition = 'top',
+    truncate = false,
+    // fullWidthSafe could be used for future enhancement
+    padding = 1,
+  } = options;
+
+  // Simplified border characters mapping
+  const borderChars = {
+    single: {
+      topLeft: '┌',
+      topRight: '┐',
+      bottomLeft: '└',
+      bottomRight: '┘',
+      horizontal: '─',
+      vertical: '│',
+    },
+    double: {
+      topLeft: '╔',
+      topRight: '╗',
+      bottomLeft: '╚',
+      bottomRight: '╝',
+      horizontal: '═',
+      vertical: '║',
+    },
+    round: {
+      topLeft: '╭',
+      topRight: '╮',
+      bottomLeft: '╰',
+      bottomRight: '╯',
+      horizontal: '─',
+      vertical: '│',
+    },
+    bold: {
+      topLeft: '┏',
+      topRight: '┓',
+      bottomLeft: '┗',
+      bottomRight: '┛',
+      horizontal: '━',
+      vertical: '┃',
+    },
+    ascii: {
+      topLeft: '+',
+      topRight: '+',
+      bottomLeft: '+',
+      bottomRight: '+',
+      horizontal: '-',
+      vertical: '|',
+    },
+  };
+
+  const chars =
+    borderChars[borderStyle as keyof typeof borderChars] || borderChars.round;
+  const effectiveTitle = title || titles?.[0] || '';
+
+  // Create title border
+  const createBorder = (isBottom: boolean) => {
+    const leftCorner = isBottom ? chars.bottomLeft : chars.topLeft;
+    const rightCorner = isBottom ? chars.bottomRight : chars.topRight;
+
+    if (!effectiveTitle) {
+      return leftCorner + chars.horizontal.repeat(width - 2) + rightCorner;
+    }
+
+    const maxTitleWidth = width - 4; // Space for corners and spaces around title
+    const titleText =
+      truncate && stringWidth(effectiveTitle) > maxTitleWidth
+        ? truncateTextCLI(effectiveTitle, maxTitleWidth)
+        : effectiveTitle;
+
+    const remainingSpace = width - stringWidth(titleText) - 4; // -4 for corners and spaces
+
+    let leftPadding = 0,
+      rightPadding = remainingSpace;
+    if (titleAlign === 'center') {
+      leftPadding = Math.floor(remainingSpace / 2);
+      rightPadding = remainingSpace - leftPadding;
+    } else if (titleAlign === 'right') {
+      leftPadding = remainingSpace;
+      rightPadding = 0;
+    }
+
+    return (
+      leftCorner +
+      chars.horizontal.repeat(leftPadding) +
+      ` ${titleText} ` +
+      chars.horizontal.repeat(rightPadding) +
+      rightCorner
+    );
+  };
+
+  // Create content lines
+  const emptyLine = chars.vertical + ' '.repeat(width - 2) + chars.vertical;
+  const lines: string[] = [];
+
+  // Top border
+  if (titlePosition === 'top') {
+    lines.push(createBorder(false));
+  } else {
+    lines.push(
+      chars.topLeft + chars.horizontal.repeat(width - 2) + chars.topRight
+    );
+  }
+
+  // Content with padding
+  for (let i = 0; i < padding; i++) {
+    lines.push(emptyLine);
+  }
+
+  // Bottom border
+  if (titlePosition === 'bottom') {
+    lines.push(createBorder(true));
+  } else {
+    lines.push(
+      chars.bottomLeft + chars.horizontal.repeat(width - 2) + chars.bottomRight
+    );
+  }
+
+  return lines.join('\n');
+}
 
 function parseArgs(args: string[]): CliOptions {
   const options: CliOptions = {};
@@ -273,6 +428,26 @@ Examples:
 
   try {
     const options = parseArgs(args);
+
+    // Handle extreme widths that might exceed terminal capabilities
+    const terminalWidth = process.stdout.columns || 80;
+    const requestedWidth = options.width || 40;
+
+    if (requestedWidth > terminalWidth) {
+      // For widths exceeding terminal size, generate output directly
+      // This bypasses Ink's terminal width limiting
+      try {
+        const directOutput = generateDirectOutput(options);
+        console.log(directOutput);
+        return;
+      } catch {
+        // Fall back to regular Ink rendering if direct output fails
+        console.warn(
+          'Warning: Direct rendering failed, falling back to Ink (output may be truncated)'
+        );
+      }
+    }
+
     render(React.createElement(TitleBox, options));
   } catch (error) {
     console.error(

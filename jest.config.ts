@@ -27,7 +27,7 @@ const config: Config = {
 
   // Transform node_modules that use ESM
   transformIgnorePatterns: [
-    'node_modules/(?!(ink-testing-library|ink|react)/)',
+    'node_modules/(?!(ink-testing-library|ink|react|string-width|strip-ansi|ansi-regex|get-east-asian-width|emoji-regex)/)',
   ],
 
   // Test file patterns
