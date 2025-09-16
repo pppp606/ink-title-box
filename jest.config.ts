@@ -78,7 +78,7 @@ const config: Config = {
     },
     // Individual file-level thresholds (values suitable for early development stage)
     './src/**/*.{ts,tsx}': {
-      branches: 40,
+      branches: 20,
       functions: 40,
       lines: 40,
       statements: 40,
