@@ -18,7 +18,7 @@ function stringWidth(str) {
       (code >= 0x3200 && code <= 0x32ff) || // Enclosed CJK
       (code >= 0x3400 && code <= 0x4dbf) || // CJK Extension A
       (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
-      (code >= 0xf900 && code <= 0xfaff)    // CJK Compatibility
+      (code >= 0xf900 && code <= 0xfaff) // CJK Compatibility
     ) {
       width += 2;
     } else {

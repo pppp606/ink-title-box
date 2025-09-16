@@ -138,7 +138,6 @@ describe('TitleBox Module', () => {
     expect(result.props.color).toBe('blue'); // default borderColor
     expect(typeof result.props.children).toBe('string');
     expect(result.props.children).toContain('Default Values Test');
-
   });
 
   test('should override default values with provided props', async () => {
