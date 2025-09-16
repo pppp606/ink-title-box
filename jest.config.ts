@@ -68,20 +68,20 @@ const config: Config = {
     'json-summary',
   ],
 
-  // Coverage thresholds - realistic thresholds suitable for current implementation
+  // Coverage thresholds - high quality standards for production
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50,
+      branches: 75,
+      functions: 75,
+      lines: 75,
+      statements: 75,
     },
-    // Individual file-level thresholds (values suitable for early development stage)
+    // Individual file-level thresholds (high quality standards)
     './src/**/*.{ts,tsx}': {
-      branches: 40,
-      functions: 40,
-      lines: 40,
-      statements: 40,
+      branches: 75,
+      functions: 75,
+      lines: 75,
+      statements: 75,
     },
   },
 
