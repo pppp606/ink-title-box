@@ -34,11 +34,11 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
-    "quality": "npm run typecheck && npm run lint:check && npm run format:check && npm run test:ci",
+    "quality": "npm run typecheck && npm run lint:check && npm run format:check",
     "quality:fix": "npm run format && npm run lint:fix && npm run typecheck",
     "precommit": "npm run quality:fix && npm run test:ci",
     "dev:start": "npm run clean && npm run build && npm run dev",
-    "ci": "npm run quality && npm run build",
+    "ci": "npm run quality && npm run build && npm run test:ci",
     "prepublishOnly": "npm run ci",
     "demo": "node demo.mjs",
     "demo:help": "node demo.mjs --help",
@@ -67,8 +67,11 @@
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
+    "@types/string-width": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
+    "chalk": "^5.6.2",
+    "cli-boxes": "^4.0.1",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -81,6 +84,10 @@
     "react": "^18.3.1",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.0.0",
+    "type-fest": "^5.0.0",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "string-width": "^5.1.2"
   }
 }
