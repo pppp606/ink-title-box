@@ -88,6 +88,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "string-width": "^8.1.0"
+    "string-width": "^5.1.2"
   }
 }
