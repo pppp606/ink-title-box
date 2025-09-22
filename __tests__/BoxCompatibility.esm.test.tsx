@@ -31,20 +31,20 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
   describe('Basic Box Rendering', () => {
     test('empty box - should be identical', () => {
-      const inkBox = renderToString(<Box borderStyle="single" />);
+      const inkBox = renderToString(<Box borderStyle='single' />);
       const titleBox = renderToString(<TitleBox />);
       expect(titleBox).toBe(inkBox);
     });
 
     test('with fixed width - should be identical', () => {
-      const inkBox = renderToString(<Box borderStyle="single" width={40} />);
+      const inkBox = renderToString(<Box borderStyle='single' width={40} />);
       const titleBox = renderToString(<TitleBox width={40} />);
       expect(titleBox).toBe(inkBox);
     });
 
     test('with Text children - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40}>
+        <Box borderStyle='single' width={40}>
           <Text>Hello World</Text>
         </Box>
       );
@@ -58,7 +58,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('with multiple Text children - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40}>
+        <Box borderStyle='single' width={40}>
           <Text>Line 1</Text>
           <Text>Line 2</Text>
         </Box>
@@ -76,7 +76,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Padding Tests', () => {
     test('uniform padding - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} padding={2}>
+        <Box borderStyle='single' width={40} padding={2}>
           <Text>Content</Text>
         </Box>
       );
@@ -90,7 +90,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('paddingX - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} paddingX={3}>
+        <Box borderStyle='single' width={40} paddingX={3}>
           <Text>Content</Text>
         </Box>
       );
@@ -104,7 +104,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('paddingY - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} paddingY={2}>
+        <Box borderStyle='single' width={40} paddingY={2}>
           <Text>Content</Text>
         </Box>
       );
@@ -118,12 +118,25 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('individual padding - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} paddingTop={1} paddingBottom={2} paddingLeft={3} paddingRight={4}>
+        <Box
+          borderStyle='single'
+          width={40}
+          paddingTop={1}
+          paddingBottom={2}
+          paddingLeft={3}
+          paddingRight={4}
+        >
           <Text>Content</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width={40} paddingTop={1} paddingBottom={2} paddingLeft={3} paddingRight={4}>
+        <TitleBox
+          width={40}
+          paddingTop={1}
+          paddingBottom={2}
+          paddingLeft={3}
+          paddingRight={4}
+        >
           <Text>Content</Text>
         </TitleBox>
       );
@@ -134,7 +147,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Border Styles', () => {
     const borderStyles = ['single', 'double', 'round', 'bold'] as const;
 
-    borderStyles.forEach((style) => {
+    borderStyles.forEach(style => {
       test(`${style} border - should be identical`, () => {
         const inkBox = renderToString(
           <Box borderStyle={style} width={40}>
@@ -152,12 +165,19 @@ describe('Ink Box Complete Compatibility Tests', () => {
   });
 
   describe('Border Colors', () => {
-    const colors = ['red', 'green', 'blue', 'yellow', 'magenta', 'cyan'] as const;
+    const colors = [
+      'red',
+      'green',
+      'blue',
+      'yellow',
+      'magenta',
+      'cyan',
+    ] as const;
 
-    colors.forEach((color) => {
+    colors.forEach(color => {
       test(`${color} border - should be identical`, () => {
         const inkBox = renderToString(
-          <Box borderStyle="single" borderColor={color} width={40}>
+          <Box borderStyle='single' borderColor={color} width={40}>
             <Text>Content</Text>
           </Box>
         );
@@ -174,7 +194,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Dimensions', () => {
     test('width and height - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={50} height={10}>
+        <Box borderStyle='single' width={50} height={10}>
           <Text>Content</Text>
         </Box>
       );
@@ -188,7 +208,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('minWidth - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" minWidth={30}>
+        <Box borderStyle='single' minWidth={30}>
           <Text>Content</Text>
         </Box>
       );
@@ -202,12 +222,12 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('percentage width - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width="50%">
+        <Box borderStyle='single' width='50%'>
           <Text>Content</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width="50%">
+        <TitleBox width='50%'>
           <Text>Content</Text>
         </TitleBox>
       );
@@ -218,13 +238,13 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Flexbox Layout', () => {
     test('flexDirection row - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} flexDirection="row">
+        <Box borderStyle='single' width={40} flexDirection='row'>
           <Text>Item 1</Text>
           <Text>Item 2</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width={40} flexDirection="row">
+        <TitleBox width={40} flexDirection='row'>
           <Text>Item 1</Text>
           <Text>Item 2</Text>
         </TitleBox>
@@ -234,13 +254,13 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('flexDirection column - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} flexDirection="column">
+        <Box borderStyle='single' width={40} flexDirection='column'>
           <Text>Item 1</Text>
           <Text>Item 2</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width={40} flexDirection="column">
+        <TitleBox width={40} flexDirection='column'>
           <Text>Item 1</Text>
           <Text>Item 2</Text>
         </TitleBox>
@@ -250,12 +270,12 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('justifyContent center - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} justifyContent="center">
+        <Box borderStyle='single' width={40} justifyContent='center'>
           <Text>Centered</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width={40} justifyContent="center">
+        <TitleBox width={40} justifyContent='center'>
           <Text>Centered</Text>
         </TitleBox>
       );
@@ -264,12 +284,12 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('alignItems center - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} height={5} alignItems="center">
+        <Box borderStyle='single' width={40} height={5} alignItems='center'>
           <Text>Centered</Text>
         </Box>
       );
       const titleBox = renderToString(
-        <TitleBox width={40} height={5} alignItems="center">
+        <TitleBox width={40} height={5} alignItems='center'>
           <Text>Centered</Text>
         </TitleBox>
       );
@@ -278,7 +298,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('gap property - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} gap={2}>
+        <Box borderStyle='single' width={40} gap={2}>
           <Text>Item 1</Text>
           <Text>Item 2</Text>
         </Box>
@@ -296,7 +316,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Margins', () => {
     test('uniform margin - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} margin={2}>
+        <Box borderStyle='single' width={40} margin={2}>
           <Text>Content</Text>
         </Box>
       );
@@ -310,7 +330,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('marginX and marginY - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} marginX={3} marginY={2}>
+        <Box borderStyle='single' width={40} marginX={3} marginY={2}>
           <Text>Content</Text>
         </Box>
       );
@@ -326,7 +346,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Border Control', () => {
     test('no top border - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} borderTop={false}>
+        <Box borderStyle='single' width={40} borderTop={false}>
           <Text>Content</Text>
         </Box>
       );
@@ -340,7 +360,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('no bottom border - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} borderBottom={false}>
+        <Box borderStyle='single' width={40} borderBottom={false}>
           <Text>Content</Text>
         </Box>
       );
@@ -354,7 +374,12 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('only left and right borders - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={40} borderTop={false} borderBottom={false}>
+        <Box
+          borderStyle='single'
+          width={40}
+          borderTop={false}
+          borderBottom={false}
+        >
           <Text>Content</Text>
         </Box>
       );
@@ -370,15 +395,15 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Complex Layouts', () => {
     test('nested boxes - should be identical', () => {
       const inkBox = renderToString(
-        <Box borderStyle="single" width={50} padding={2}>
-          <Box borderStyle="double" padding={1}>
+        <Box borderStyle='single' width={50} padding={2}>
+          <Box borderStyle='double' padding={1}>
             <Text>Nested content</Text>
           </Box>
         </Box>
       );
       const titleBox = renderToString(
         <TitleBox width={50} padding={2}>
-          <Box borderStyle="double" padding={1}>
+          <Box borderStyle='double' padding={1}>
             <Text>Nested content</Text>
           </Box>
         </TitleBox>
@@ -389,11 +414,11 @@ describe('Ink Box Complete Compatibility Tests', () => {
     test('mixed flexbox and padding - should be identical', () => {
       const inkBox = renderToString(
         <Box
-          borderStyle="single"
+          borderStyle='single'
           width={60}
           padding={2}
-          flexDirection="row"
-          justifyContent="space-between"
+          flexDirection='row'
+          justifyContent='space-between'
         >
           <Text>Left</Text>
           <Text>Right</Text>
@@ -403,8 +428,8 @@ describe('Ink Box Complete Compatibility Tests', () => {
         <TitleBox
           width={60}
           padding={2}
-          flexDirection="row"
-          justifyContent="space-between"
+          flexDirection='row'
+          justifyContent='space-between'
         >
           <Text>Left</Text>
           <Text>Right</Text>
@@ -417,7 +442,7 @@ describe('Ink Box Complete Compatibility Tests', () => {
   describe('Title Functionality (unique to TitleBox)', () => {
     test('with title - should embed in border', () => {
       const output = renderToString(
-        <TitleBox title="My Title" width={40}>
+        <TitleBox title='My Title' width={40}>
           <Text>Content</Text>
         </TitleBox>
       );
@@ -428,19 +453,19 @@ describe('Ink Box Complete Compatibility Tests', () => {
 
     test('title with different alignments', () => {
       const leftAligned = renderToString(
-        <TitleBox title="Title" titleAlign="left" width={40}>
+        <TitleBox title='Title' titleAlign='left' width={40}>
           <Text>Content</Text>
         </TitleBox>
       );
 
       const centerAligned = renderToString(
-        <TitleBox title="Title" titleAlign="center" width={40}>
+        <TitleBox title='Title' titleAlign='center' width={40}>
           <Text>Content</Text>
         </TitleBox>
       );
 
       const rightAligned = renderToString(
-        <TitleBox title="Title" titleAlign="right" width={40}>
+        <TitleBox title='Title' titleAlign='right' width={40}>
           <Text>Content</Text>
         </TitleBox>
       );

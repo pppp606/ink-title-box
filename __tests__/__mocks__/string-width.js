@@ -1,4 +1,4 @@
-// Mock implementation of string-width for Jest tests
+// CommonJS Mock implementation of string-width for Jest tests
 function stringWidth(str) {
   if (typeof str !== 'string') return 0;
 
@@ -28,5 +28,5 @@ function stringWidth(str) {
   return width;
 }
 
+// CommonJS exports
 module.exports = stringWidth;
-module.exports.default = stringWidth;

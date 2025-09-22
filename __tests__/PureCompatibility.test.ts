@@ -36,7 +36,12 @@ describe('Pure Ink Box Compatibility Tests', () => {
 
         // Flexbox
         flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
-        justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+        justifyContent?:
+          | 'flex-start'
+          | 'flex-end'
+          | 'center'
+          | 'space-between'
+          | 'space-around';
         alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
         alignSelf?: 'flex-start' | 'center' | 'flex-end' | 'auto';
         flexGrow?: number;
@@ -143,7 +148,7 @@ describe('Pure Ink Box Compatibility Tests', () => {
       ];
 
       // Verify all prop combinations are valid types
-      validProps.forEach((props) => {
+      validProps.forEach(props => {
         expect(typeof props).toBe('object');
         expect(props).toBeDefined();
         // If we got here without TypeScript errors, the interface is compatible
@@ -155,9 +160,25 @@ describe('Pure Ink Box Compatibility Tests', () => {
 
     test('should support all Ink Box enum values', () => {
       // Test that all enum values are properly typed
-      const flexDirections = ['row', 'column', 'row-reverse', 'column-reverse'] as const;
-      const justifyValues = ['flex-start', 'flex-end', 'center', 'space-between', 'space-around'] as const;
-      const alignValues = ['flex-start', 'center', 'flex-end', 'stretch'] as const;
+      const flexDirections = [
+        'row',
+        'column',
+        'row-reverse',
+        'column-reverse',
+      ] as const;
+      const justifyValues = [
+        'flex-start',
+        'flex-end',
+        'center',
+        'space-between',
+        'space-around',
+      ] as const;
+      const alignValues = [
+        'flex-start',
+        'center',
+        'flex-end',
+        'stretch',
+      ] as const;
       const wrapValues = ['nowrap', 'wrap', 'wrap-reverse'] as const;
       const overflowValues = ['visible', 'hidden'] as const;
       const displayValues = ['flex', 'none'] as const;
@@ -228,34 +249,34 @@ describe('Pure Ink Box Compatibility Tests', () => {
     test('should support priority system prop combinations', () => {
       // Test margin priority: specific > axis > general
       const marginPriority = {
-        margin: 1,       // Base
-        marginX: 2,      // Should override margin for left/right
-        marginY: 3,      // Should override margin for top/bottom
-        marginTop: 4,    // Should override marginY for top
-        marginLeft: 5,   // Should override marginX for left
+        margin: 1, // Base
+        marginX: 2, // Should override margin for left/right
+        marginY: 3, // Should override margin for top/bottom
+        marginTop: 4, // Should override marginY for top
+        marginLeft: 5, // Should override marginX for left
       };
 
       // Test padding priority: specific > axis > general
       const paddingPriority = {
-        padding: 1,      // Base
-        paddingX: 2,     // Should override padding for left/right
-        paddingY: 3,     // Should override padding for top/bottom
-        paddingTop: 4,   // Should override paddingY for top
-        paddingLeft: 5,  // Should override paddingX for left
+        padding: 1, // Base
+        paddingX: 2, // Should override padding for left/right
+        paddingY: 3, // Should override padding for top/bottom
+        paddingTop: 4, // Should override paddingY for top
+        paddingLeft: 5, // Should override paddingX for left
       };
 
       // Test gap priority: specific > general
       const gapPriority = {
-        gap: 1,       // Base
+        gap: 1, // Base
         columnGap: 2, // Should override gap for columns
-        rowGap: 3,    // Should override gap for rows
+        rowGap: 3, // Should override gap for rows
       };
 
       // Test overflow priority: specific > general
       const overflowPriority = {
-        overflow: 'visible' as const,   // Base
-        overflowX: 'hidden' as const,   // Should override overflow for X axis
-        overflowY: 'visible' as const,  // Should override overflow for Y axis
+        overflow: 'visible' as const, // Base
+        overflowX: 'hidden' as const, // Should override overflow for X axis
+        overflowY: 'visible' as const, // Should override overflow for Y axis
       };
 
       expect(marginPriority).toBeDefined();
@@ -324,7 +345,7 @@ describe('Pure Ink Box Compatibility Tests', () => {
         },
       ];
 
-      complexLayouts.forEach((layout) => {
+      complexLayouts.forEach(layout => {
         expect(layout).toBeDefined();
         expect(typeof layout).toBe('object');
         // If we reach here, TypeScript accepts the prop combination
@@ -399,7 +420,12 @@ describe('Pure Ink Box Compatibility Tests', () => {
 
         // Ink Box props
         flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
-        justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+        justifyContent?:
+          | 'flex-start'
+          | 'flex-end'
+          | 'center'
+          | 'space-between'
+          | 'space-around';
         margin?: number;
         padding?: number;
         gap?: number;
@@ -437,7 +463,7 @@ describe('Pure Ink Box Compatibility Tests', () => {
         },
       ];
 
-      mixedPropsCombinations.forEach((props) => {
+      mixedPropsCombinations.forEach(props => {
         expect(props).toBeDefined();
         // If TypeScript compiles this, backward compatibility is maintained
       });
