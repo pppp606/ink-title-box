@@ -4,7 +4,23 @@ import { render } from 'ink-testing-library';
 import { Box, Text } from 'ink';
 import { TitleBox } from '../src/index.js';
 
-// ESM-enabled ink-testing-library compatibility tests
+/**
+ * Ink Box ESM Compatibility Tests
+ *
+ * These tests validate the core behavioral identity between TitleBox and Ink Box
+ * using ink-testing-library in ESM mode. This test suite serves as the foundation
+ * for ensuring TitleBox is a perfect drop-in replacement for Ink Box.
+ *
+ * Key validation areas:
+ * - Basic Box rendering behavior (empty boxes, children)
+ * - Border style compatibility across all Ink-supported styles
+ * - Layout properties (width, margin, flexbox)
+ * - Title enhancement functionality (unique to TitleBox)
+ *
+ * When no title is provided, TitleBox should produce identical output to Ink Box.
+ * When a title is provided, TitleBox should maintain the same layout while
+ * embedding the title in the border.
+ */
 describe('Ink Box ESM Compatibility Tests', () => {
   // Helper function to render component to string
   const renderToString = (component: React.ReactElement): string => {

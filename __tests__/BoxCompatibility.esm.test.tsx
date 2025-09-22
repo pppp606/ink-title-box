@@ -4,6 +4,25 @@ import { render } from 'ink-testing-library';
 import { Box, Text } from 'ink';
 import { TitleBox } from '../src/index.js';
 
+/**
+ * Ink Box Complete Compatibility Tests
+ *
+ * This comprehensive test suite validates that TitleBox (without title) behaves
+ * identically to Ink's Box component across all features and edge cases.
+ *
+ * Test coverage includes:
+ * - Basic rendering and children handling
+ * - All padding variations (uniform, directional, individual)
+ * - All border styles and colors supported by Ink
+ * - Dimension handling (width, height, percentage, minWidth/Height)
+ * - Complete flexbox layout system (direction, justify, align, wrap, gaps)
+ * - Margin system with priority rules
+ * - Border visibility controls
+ * - Complex nested layouts and compositions
+ *
+ * Each test compares TitleBox output against Ink Box output using
+ * ink-testing-library to ensure pixel-perfect compatibility.
+ */
 describe('Ink Box Complete Compatibility Tests', () => {
   const renderToString = (component: React.ReactElement): string => {
     const { lastFrame } = render(component);
