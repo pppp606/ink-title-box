@@ -28,7 +28,7 @@ const config: Config = {
 
   // Transform specific ESM modules that cause issues
   transformIgnorePatterns: [
-    'node_modules/(?!(ink-testing-library|ink|react)/)',
+    'node_modules/(?!(ink-testing-library|ink|react|string-width|strip-ansi|ansi-regex|eastasianwidth|emoji-regex)/)',
   ],
 
   // Test file patterns
@@ -97,8 +97,6 @@ const config: Config = {
     '/dist/',
     '__tests__/TitleFunctionality.test.tsx',
     '__tests__/EdgeCaseCompatibility.test.tsx',
-    '__tests__/FlexboxCompatibility.test.tsx',
-    '__tests__/BoxCompatibility.test.tsx',
     '__tests__/TitleBox.enhanced.test.ts',
   ],
 
