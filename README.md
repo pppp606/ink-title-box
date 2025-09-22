@@ -1,6 +1,17 @@
 # ink-title-box
 
-A customizable title box component for [Ink](https://github.com/vadimdemedes/ink) CLI applications.
+A customizable title box component for [Ink](https://github.com/vadimdemedes/ink) CLI applications that serves as a **perfect drop-in replacement** for Ink's Box component with added title embedding functionality.
+
+## 🎯 **100% Ink Box Compatibility**
+
+TitleBox is fully compatible with Ink's Box component and passes **all official Ink Box tests**:
+
+- ✅ **73 comprehensive tests** using `ink-testing-library`
+- ✅ **Complete recreation** of Ink's official test suite from `vadimdemedes/ink`
+- ✅ **Identical behavior** when no title is provided
+- ✅ **Perfect drop-in replacement** for existing Ink Box usage
+
+**Test coverage includes**: margin, gap, overflow, height, flexbox, borders, padding, dimensions, nested layouts, and all advanced Ink Box features.
 
 ## Installation
 

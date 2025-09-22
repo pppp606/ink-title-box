@@ -155,6 +155,7 @@ export default [
       '*.config.js',
       '*.config.ts',
       '.claude/**/*',
+      'test-*.js', // Ignore test scripts in root
     ],
   },
 ];

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'ink';
+import { Box, Text } from 'ink';
 import { type LiteralUnion } from 'type-fest';
 import { type ForegroundColorName } from 'chalk';
 import { type Boxes, type BoxStyle } from 'cli-boxes';
@@ -93,22 +93,46 @@ interface TitleBoxProps {
   overflowY?: 'visible' | 'hidden';
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getStringWidth = (str: string, fullWidthSafe: boolean): number => {
-  // Use string-width for accurate character width calculation
-  // The fullWidthSafe parameter is kept for backward compatibility
-  // but string-width already handles full-width characters properly
+// Dimension parsing utilities (Ink-compatible)
+const parseDimension = (
+  value: number | string | undefined,
+  defaultValue = 0
+): { type: 'number' | 'percent' | 'auto'; value: number } => {
+  if (value === undefined) return { type: 'auto', value: 0 };
+  if (typeof value === 'number') return { type: 'number', value };
+  if (typeof value === 'string' && value.endsWith('%')) {
+    return { type: 'percent', value: Number.parseInt(value, 10) };
+  }
+  return { type: 'number', value: defaultValue };
+};
+
+// Margin resolution utilities (following Ink priority)
+const resolveMargins = (props: {
+  margin?: number;
+  marginX?: number;
+  marginY?: number;
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+}) => {
+  const base = props.margin ?? 0;
+  return {
+    top: props.marginTop ?? props.marginY ?? base,
+    bottom: props.marginBottom ?? props.marginY ?? base,
+    left: props.marginLeft ?? props.marginX ?? base,
+    right: props.marginRight ?? props.marginX ?? base,
+  };
+};
+
+const getStringWidth = (str: string): number => {
   return stringWidth(str);
 };
 
-const truncateText = (
-  text: string,
-  maxWidth: number,
-  fullWidthSafe: boolean = false
-): string => {
+const truncateText = (text: string, maxWidth: number): string => {
   if (!maxWidth) return text;
 
-  const textWidth = getStringWidth(text, fullWidthSafe);
+  const textWidth = getStringWidth(text);
   if (textWidth <= maxWidth) return text;
 
   // Use simple character-by-character truncation with proper width measurement
@@ -185,10 +209,8 @@ const createTitleBorder = (
   isBottom: boolean = false
 ): string => {
   const chars = BORDER_CHARS[borderStyle];
-  const titleText = truncate
-    ? truncateText(title, width - 4, fullWidthSafe)
-    : title;
-  const titleWidth = getStringWidth(titleText, fullWidthSafe);
+  const titleText = truncate ? truncateText(title, width - 4) : title;
+  const titleWidth = getStringWidth(titleText);
 
   // Calculate available space for horizontal line
   const totalHorizontalSpace = width - 2; // excluding corner characters
@@ -201,8 +223,8 @@ const createTitleBorder = (
   if (remainingSpace < 0) {
     // Title too long, auto-truncate to fit
     const maxTitleWidth = width - 4; // Leave space for corners and spaces around title
-    const truncatedTitle = truncateText(title, maxTitleWidth, fullWidthSafe);
-    const truncatedWidth = getStringWidth(truncatedTitle, fullWidthSafe);
+    const truncatedTitle = truncateText(title, maxTitleWidth);
+    const truncatedWidth = getStringWidth(truncatedTitle);
     const newRemainingSpace = width - 2 - truncatedWidth - 2;
 
     return (
@@ -240,123 +262,18 @@ const createTitleBorder = (
   );
 };
 
-const renderTitles = (
-  props: TitleBoxProps,
-  availableWidth: number
-): React.ReactNode => {
-  const {
-    title,
-    titles,
-    titleAlign = 'left',
-    truncate = false,
-    fullWidthSafe = false,
-  } = props;
-
-  // Note: fullWidthSafe is kept for backward compatibility
-  // but string-width already handles full-width characters properly
-
-  // Calculate content width (total width minus borders and padding)
-  const BORDER_WIDTH = 2; // Left and right borders
-  const DEFAULT_PADDING = 2; // Default left and right content padding
-  const contentWidth = availableWidth - BORDER_WIDTH - DEFAULT_PADDING;
-
-  // Priority: titles array > title string > children
-  if (titles && titles.length > 0) {
-    if (titleAlign === 'space-between' && titles.length === 2) {
-      const [leftTitle, rightTitle] = titles;
-
-      // Calculate maximum width for each title
-      const MIN_SPACING = 1; // Minimum space between titles
-      const maxTitleWidth = Math.floor((contentWidth - MIN_SPACING) / 2);
-
-      // Process titles with truncation if needed
-      const processedLeft = truncate
-        ? truncateText(leftTitle, maxTitleWidth, fullWidthSafe)
-        : leftTitle;
-      const processedRight = truncate
-        ? truncateText(rightTitle, maxTitleWidth, fullWidthSafe)
-        : rightTitle;
-
-      // Calculate actual widths after processing
-      const leftWidth = getStringWidth(processedLeft, fullWidthSafe);
-      const rightWidth = getStringWidth(processedRight, fullWidthSafe);
-      const spacingWidth = contentWidth - leftWidth - rightWidth;
-      const spacing = ' '.repeat(Math.max(MIN_SPACING, spacingWidth));
-
-      return (
-        <Text bold>
-          {processedLeft}
-          {spacing}
-          {processedRight}
-        </Text>
-      );
-    } else {
-      const combinedTitle = titles.join(' ');
-      const processedTitle = truncate
-        ? truncateText(combinedTitle, contentWidth, fullWidthSafe)
-        : combinedTitle;
-      return renderAlignedTitle(
-        processedTitle,
-        titleAlign,
-        contentWidth,
-        fullWidthSafe
-      );
-    }
-  }
-
-  if (title) {
-    const processedTitle = truncate
-      ? truncateText(title, contentWidth, fullWidthSafe)
-      : title;
-    return renderAlignedTitle(
-      processedTitle,
-      titleAlign,
-      contentWidth,
-      fullWidthSafe
-    );
-  }
-
-  return null;
-};
-
-const renderAlignedTitle = (
-  text: string,
-  align: TitleAlign,
-  availableWidth: number,
-  fullWidthSafe: boolean
-): React.ReactNode => {
-  const textWidth = getStringWidth(text, fullWidthSafe);
-
-  switch (align) {
-    case 'left':
-      return <Text bold>{text}</Text>;
-
-    case 'center': {
-      const paddingLength = Math.floor((availableWidth - textWidth) / 2);
-      const leftPadding = ' '.repeat(Math.max(0, paddingLength));
-      return (
-        <Text bold>
-          {leftPadding}
-          {text}
-        </Text>
-      );
-    }
-
-    case 'right': {
-      const paddingLength = availableWidth - textWidth;
-      const leftPadding = ' '.repeat(Math.max(0, paddingLength));
-      return (
-        <Text bold>
-          {leftPadding}
-          {text}
-        </Text>
-      );
-    }
-
-    default:
-      return <Text bold>{text}</Text>;
-  }
-};
+// Legacy render functions - kept for backward compatibility but not used in new implementation
+// const renderTitles = (
+//   props: TitleBoxProps,
+//   availableWidth: number
+// ): React.ReactNode => { ... }
+//
+// const renderAlignedTitle = (
+//   text: string,
+//   align: TitleAlign,
+//   availableWidth: number,
+//   fullWidthSafe: boolean
+// ): React.ReactNode => { ... }
 
 export const TitleBox: React.FC<TitleBoxProps> = props => {
   const {
@@ -372,7 +289,10 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     // Core Ink Box props
     borderStyle = 'single',
     borderColor = 'blue',
-    width = 40,
+    width,
+    height,
+    minWidth,
+    minHeight,
     display = 'flex',
 
     // Padding props
@@ -384,14 +304,52 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     paddingLeft,
     paddingRight,
 
-    // Border control
+    // Margin props (Ink compatible)
+    margin,
+    marginX,
+    marginY,
+    marginTop,
+    marginBottom,
+    marginLeft,
+    marginRight,
+
+    // Flexbox props (Ink compatible)
+    flexDirection = 'row',
+    justifyContent = 'flex-start',
+    // alignItems = 'stretch',
+    // alignSelf,
+    // flexGrow,
+    // flexShrink,
+    // flexBasis,
+    // flexWrap = 'nowrap',
+
+    // Gap props (Ink compatible)
+    gap,
+    columnGap,
+    rowGap,
+
+    // Border control (Ink compatible)
     borderTop = true,
     borderBottom = true,
     borderLeft = true,
     borderRight = true,
+    // borderTopColor,
+    // borderBottomColor,
+    // borderLeftColor,
+    // borderRightColor,
+    // borderDimColor,
+    // borderTopDimColor,
+    // borderBottomDimColor,
+    // borderLeftDimColor,
+    // borderRightDimColor,
 
-    // All other Ink props (for future compatibility)
-    // Future props will be handled here
+    // Overflow props (Ink compatible)
+    overflow,
+    overflowX,
+    overflowY,
+
+    // Position props (Ink compatible)
+    // position,
   } = props;
 
   // Return null if display is none (Ink compatibility)
@@ -399,62 +357,273 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     return null;
   }
 
-  const chars = BORDER_CHARS[borderStyle as BorderStyle];
+  // Parse dimensions with Ink compatibility
+  const parsedWidth = parseDimension(width);
+  const parsedHeight = parseDimension(height);
+  const parsedMinWidth = parseDimension(minWidth);
+  const parsedMinHeight = parseDimension(minHeight);
+
+  // Resolve margins with Ink priority system
+  const margins = resolveMargins({
+    ...(margin !== undefined && { margin }),
+    ...(marginX !== undefined && { marginX }),
+    ...(marginY !== undefined && { marginY }),
+    ...(marginTop !== undefined && { marginTop }),
+    ...(marginBottom !== undefined && { marginBottom }),
+    ...(marginLeft !== undefined && { marginLeft }),
+    ...(marginRight !== undefined && { marginRight }),
+  });
+
+  // Check if title is provided
+  const hasTitle = !!(title || titles?.length);
 
   // Handle Ink-compatible padding logic with fallbacks
   const resolvePadding = () => {
-    const basePadding = padding !== undefined ? padding : 1;
-
+    // When no title is provided, use 0 padding (same as Ink Box)
+    // When title is provided, use padding to accommodate title positioning
+    const basePadding = padding !== undefined ? padding : hasTitle ? 1 : 0;
     return {
-      top:
-        paddingTop !== undefined
-          ? paddingTop
-          : paddingY !== undefined
-            ? paddingY
-            : basePadding,
-      bottom:
-        paddingBottom !== undefined
-          ? paddingBottom
-          : paddingY !== undefined
-            ? paddingY
-            : basePadding,
-      left:
-        paddingLeft !== undefined
-          ? paddingLeft
-          : paddingX !== undefined
-            ? paddingX
-            : basePadding,
-      right:
-        paddingRight !== undefined
-          ? paddingRight
-          : paddingX !== undefined
-            ? paddingX
-            : basePadding,
+      top: paddingTop ?? paddingY ?? basePadding,
+      bottom: paddingBottom ?? paddingY ?? basePadding,
+      left: paddingLeft ?? paddingX ?? basePadding,
+      right: paddingRight ?? paddingX ?? basePadding,
     };
   };
 
   const finalPadding = resolvePadding();
 
-  // Resolve width (support string/percentage in the future)
-  const resolvedWidth = typeof width === 'string' ? 40 : width;
+  // Resolve gap properties (Ink compatible) - used in title rendering
+  // const resolvedGaps = {
+  //   row: rowGap ?? gap ?? 0,
+  //   column: columnGap ?? gap ?? 0,
+  // };
 
-  // Create content lines
-  const contentLines: string[] = [];
-  if (children) {
-    contentLines.push(String(children));
+  // Calculate resolved width (handle percentages)
+  // For titled boxes, we need a width for border rendering
+  let resolvedWidth: number;
+  if (parsedWidth.type === 'percent') {
+    // For percentage, use a default container width (40) for now
+    // In a real implementation, this would come from parent context
+    resolvedWidth = Math.floor((40 * parsedWidth.value) / 100);
+  } else if (parsedWidth.type === 'auto' || parsedWidth.value === 0) {
+    // For auto or undefined width, use default only for titled boxes
+    resolvedWidth = hasTitle ? 40 : 0;
   } else {
-    // Use title rendering
-    const titleElement = renderTitles(props, resolvedWidth);
-    if (titleElement) {
-      contentLines.push(''); // Empty content when using title
+    resolvedWidth = parsedWidth.value;
+  }
+
+  // Apply minimum width constraint
+  if (
+    parsedMinWidth.type === 'number' &&
+    resolvedWidth < parsedMinWidth.value
+  ) {
+    resolvedWidth = parsedMinWidth.value;
+  }
+
+  // Calculate resolved height (if specified)
+  let resolvedHeight: number | undefined;
+  if (parsedHeight.type === 'number') {
+    resolvedHeight = parsedHeight.value;
+  } else if (parsedHeight.type === 'percent') {
+    // For percentage height, use a default container height
+    resolvedHeight = Math.floor((20 * parsedHeight.value) / 100);
+  }
+
+  // Apply minimum height constraint
+  if (
+    parsedMinHeight.type === 'number' &&
+    resolvedHeight !== undefined &&
+    resolvedHeight < parsedMinHeight.value
+  ) {
+    resolvedHeight = parsedMinHeight.value;
+  }
+
+  const chars = BORDER_CHARS[borderStyle as BorderStyle];
+
+  // Calculate content area dimensions
+  const borderWidth = {
+    left: borderLeft ? 1 : 0,
+    right: borderRight ? 1 : 0,
+    top: borderTop ? 1 : 0,
+    bottom: borderBottom ? 1 : 0,
+  };
+
+  const contentAreaWidth =
+    resolvedWidth -
+    borderWidth.left -
+    borderWidth.right -
+    finalPadding.left -
+    finalPadding.right;
+
+  // When no title is provided, delegate to Ink Box for perfect compatibility
+  if (!hasTitle) {
+    // Delegate to Ink Box for identical behavior
+    return (
+      <Box
+        {...(borderStyle && borderStyle !== 'ascii' && { borderStyle })}
+        {...(borderColor && { borderColor })}
+        {...(width && { width })}
+        {...(height && { height })}
+        {...(minWidth && { minWidth })}
+        {...(minHeight && { minHeight })}
+        {...(padding !== undefined && { padding })}
+        {...(paddingX !== undefined && { paddingX })}
+        {...(paddingY !== undefined && { paddingY })}
+        {...(paddingTop !== undefined && { paddingTop })}
+        {...(paddingBottom !== undefined && { paddingBottom })}
+        {...(paddingLeft !== undefined && { paddingLeft })}
+        {...(paddingRight !== undefined && { paddingRight })}
+        {...(margin !== undefined && { margin })}
+        {...(marginX !== undefined && { marginX })}
+        {...(marginY !== undefined && { marginY })}
+        {...(marginTop !== undefined && { marginTop })}
+        {...(marginBottom !== undefined && { marginBottom })}
+        {...(marginLeft !== undefined && { marginLeft })}
+        {...(marginRight !== undefined && { marginRight })}
+        {...(props.flexGrow !== undefined && { flexGrow: props.flexGrow })}
+        {...(props.flexShrink !== undefined && {
+          flexShrink: props.flexShrink,
+        })}
+        {...(flexDirection && { flexDirection })}
+        {...(props.flexBasis !== undefined && { flexBasis: props.flexBasis })}
+        {...(props.flexWrap && { flexWrap: props.flexWrap })}
+        {...(props.alignItems && { alignItems: props.alignItems })}
+        {...(props.alignSelf && { alignSelf: props.alignSelf })}
+        {...(justifyContent && { justifyContent })}
+        {...(gap !== undefined && { gap })}
+        {...(columnGap !== undefined && { columnGap })}
+        {...(rowGap !== undefined && { rowGap })}
+        {...(borderTop !== undefined && { borderTop })}
+        {...(borderBottom !== undefined && { borderBottom })}
+        {...(borderLeft !== undefined && { borderLeft })}
+        {...(borderRight !== undefined && { borderRight })}
+        {...(props.borderTopColor && { borderTopColor: props.borderTopColor })}
+        {...(props.borderBottomColor && {
+          borderBottomColor: props.borderBottomColor,
+        })}
+        {...(props.borderLeftColor && {
+          borderLeftColor: props.borderLeftColor,
+        })}
+        {...(props.borderRightColor && {
+          borderRightColor: props.borderRightColor,
+        })}
+        {...(props.borderDimColor !== undefined && {
+          borderDimColor: props.borderDimColor,
+        })}
+        {...(props.borderTopDimColor !== undefined && {
+          borderTopDimColor: props.borderTopDimColor,
+        })}
+        {...(props.borderBottomDimColor !== undefined && {
+          borderBottomDimColor: props.borderBottomDimColor,
+        })}
+        {...(props.borderLeftDimColor !== undefined && {
+          borderLeftDimColor: props.borderLeftDimColor,
+        })}
+        {...(props.borderRightDimColor !== undefined && {
+          borderRightDimColor: props.borderRightDimColor,
+        })}
+        {...(overflow && { overflow })}
+        {...(overflowX && { overflowX })}
+        {...(overflowY && { overflowY })}
+        {...(display && { display })}
+        {...(props.position && { position: props.position })}
+      >
+        {children}
+      </Box>
+    );
+  }
+
+  // Extract text content from React elements for title embedding
+  const extractTextFromReactElement = (element: React.ReactNode): string => {
+    if (typeof element === 'string') return element;
+    if (typeof element === 'number') return String(element);
+    if (React.isValidElement(element)) {
+      // For Text components, extract the children
+      if (element.props && element.props.children) {
+        return extractTextFromReactElement(element.props.children);
+      }
+      return '';
+    }
+    if (Array.isArray(element)) {
+      return element.map(extractTextFromReactElement).join('');
+    }
+    return '';
+  };
+
+  // Handle string content with title embedding
+  let contentLines: string[] = [];
+
+  if (children) {
+    // Extract text content from React elements or use string directly
+    const childrenString = extractTextFromReactElement(children);
+    contentLines = childrenString.split('\n');
+  } else {
+    // No content - empty box
+    contentLines = [];
+  }
+
+  // Apply basic layout for children with title
+  if (Array.isArray(children) && children.length > 1) {
+    // Simple layout for multiple children
+    const childStrings = children.map(child => String(child));
+    contentLines = childStrings;
+  }
+
+  // Calculate final content height
+  const finalContentHeight = contentLines.length;
+
+  // Apply height constraint if specified
+  if (resolvedHeight !== undefined) {
+    const availableContentHeight =
+      resolvedHeight -
+      borderWidth.top -
+      borderWidth.bottom -
+      finalPadding.top -
+      finalPadding.bottom;
+
+    if (finalContentHeight < availableContentHeight) {
+      // Add empty lines to reach specified height
+      const linesToAdd = availableContentHeight - finalContentHeight;
+
+      if (justifyContent === 'center') {
+        const topPadding = Math.floor(linesToAdd / 2);
+        const bottomPadding = linesToAdd - topPadding;
+        contentLines = Array(topPadding)
+          .fill('')
+          .concat(contentLines)
+          .concat(Array(bottomPadding).fill(''));
+      } else if (justifyContent === 'flex-end') {
+        contentLines = Array(linesToAdd).fill('').concat(contentLines);
+      } else {
+        contentLines = contentLines.concat(Array(linesToAdd).fill(''));
+      }
+    } else if (finalContentHeight > availableContentHeight) {
+      // Trim content if it exceeds height (overflow handling)
+      const effectiveOverflow = overflowY ?? overflow ?? 'visible';
+      if (effectiveOverflow === 'hidden') {
+        contentLines = contentLines.slice(0, availableContentHeight);
+      }
     }
   }
 
-  // Add padding lines with Ink-compatible padding and border controls
+  // Apply horizontal overflow handling
+  const effectiveOverflowX = overflowX ?? overflow ?? 'visible';
+  if (effectiveOverflowX === 'hidden') {
+    contentLines = contentLines.map(line => {
+      const lineWidth = getStringWidth(line);
+      if (lineWidth > contentAreaWidth) {
+        return truncateText(line, contentAreaWidth);
+      }
+      return line;
+    });
+  }
+
+  // Build final output with padding and borders
   const emptyLine =
     (borderLeft ? chars.vertical : ' ') +
-    ' '.repeat(resolvedWidth - (borderLeft ? 1 : 0) - (borderRight ? 1 : 0)) +
+    ' '.repeat(resolvedWidth - borderWidth.left - borderWidth.right) +
     (borderRight ? chars.vertical : ' ');
+
   const paddedLines: string[] = [];
 
   // Add top padding
@@ -464,16 +633,10 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
 
   // Add content with horizontal padding
   contentLines.forEach(line => {
-    const availableContentWidth =
-      resolvedWidth -
-      (borderLeft ? 1 : 0) -
-      (borderRight ? 1 : 0) -
-      finalPadding.left -
-      finalPadding.right;
     const paddedLine =
       (borderLeft ? chars.vertical : ' ') +
       ' '.repeat(finalPadding.left) +
-      line.padEnd(Math.max(0, availableContentWidth)) +
+      line.padEnd(Math.max(0, contentAreaWidth)) +
       ' '.repeat(finalPadding.right) +
       (borderRight ? chars.vertical : ' ');
     paddedLines.push(paddedLine);
@@ -484,7 +647,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     paddedLines.push(emptyLine);
   }
 
-  // Create borders with Ink compatibility and title embedding
+  // Create borders with title embedding
   const topBorder =
     borderTop && (title || titles)
       ? createTitleBorder(
@@ -494,7 +657,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
           titleAlign,
           truncate,
           fullWidthSafe,
-          false // Top position
+          false
         )
       : borderTop
         ? chars.topLeft +
@@ -508,11 +671,11 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
       chars.bottomRight
     : ' '.repeat(resolvedWidth);
 
-  // Assemble all lines with Ink compatibility
+  // Assemble all lines
   const allLines: string[] = [];
 
   if (titlePosition === 'bottom') {
-    if (borderTop)
+    if (borderTop) {
       allLines.push(
         borderTop
           ? chars.topLeft +
@@ -520,6 +683,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
               chars.topRight
           : ''
       );
+    }
     allLines.push(...paddedLines);
     if (borderBottom && (title || titles)) {
       allLines.push(
@@ -530,7 +694,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
           titleAlign,
           truncate,
           fullWidthSafe,
-          true // Bottom position
+          true
         )
       );
     } else if (borderBottom) {
@@ -542,10 +706,30 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     if (borderBottom) allLines.push(bottomBorder);
   }
 
+  // Apply margin spacing
+  const marginLines: string[] = [];
+
+  // Top margin
+  for (let i = 0; i < margins.top; i++) {
+    marginLines.push(' '.repeat(resolvedWidth + margins.left + margins.right));
+  }
+
+  // Content with left/right margins
+  allLines.forEach(line => {
+    marginLines.push(
+      ' '.repeat(margins.left) + line + ' '.repeat(margins.right)
+    );
+  });
+
+  // Bottom margin
+  for (let i = 0; i < margins.bottom; i++) {
+    marginLines.push(' '.repeat(resolvedWidth + margins.left + margins.right));
+  }
+
   // Apply border colors (Ink compatible)
   const effectiveBorderColor = borderColor || 'blue';
 
-  return <Text color={effectiveBorderColor}>{allLines.join('\n')}</Text>;
+  return <Text color={effectiveBorderColor}>{marginLines.join('\n')}</Text>;
 };
 
 // Extension slot component
