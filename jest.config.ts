@@ -28,7 +28,7 @@ const config: Config = {
 
   // Transform specific ESM modules that cause issues
   transformIgnorePatterns: [
-    'node_modules/(?!(ink-testing-library|ink|react|string-width|strip-ansi|ansi-regex|eastasianwidth|emoji-regex)/)',
+    'node_modules/(?!(ink-testing-library|ink|react|string-width|strip-ansi|ansi-regex|eastasianwidth|emoji-regex|ansi-styles|chalk|type-fest|cli-boxes)/)',
   ],
 
   // Test file patterns
@@ -91,13 +91,11 @@ const config: Config = {
   // Module directories
   moduleDirectories: ['node_modules', 'src'],
 
-  // Ignore patterns - temporarily exclude failing ink-testing-library tests
+  // Ignore patterns - exclude only ESM tests that require special setup
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
-    '__tests__/TitleFunctionality.test.tsx',
-    '__tests__/EdgeCaseCompatibility.test.tsx',
-    '__tests__/TitleBox.enhanced.test.ts',
+    '__tests__/InkCompatibility.esm.test.tsx',  // ESM test requires special runner
   ],
 
   // Clear mocks between tests

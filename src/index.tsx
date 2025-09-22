@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'ink';
+import { Box, Text } from 'ink';
 import { type LiteralUnion } from 'type-fest';
 import { type ForegroundColorName } from 'chalk';
 import { type Boxes, type BoxStyle } from 'cli-boxes';
@@ -289,7 +289,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     // Core Ink Box props
     borderStyle = 'single',
     borderColor = 'blue',
-    width = 40,
+    width,
     height,
     minWidth,
     minHeight,
@@ -358,7 +358,7 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
   }
 
   // Parse dimensions with Ink compatibility
-  const parsedWidth = parseDimension(width, 40);
+  const parsedWidth = parseDimension(width);
   const parsedHeight = parseDimension(height);
   const parsedMinWidth = parseDimension(minWidth);
   const parsedMinHeight = parseDimension(minHeight);
@@ -374,9 +374,14 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     ...(marginRight !== undefined && { marginRight }),
   });
 
+  // Check if title is provided
+  const hasTitle = !!(title || titles?.length);
+
   // Handle Ink-compatible padding logic with fallbacks
   const resolvePadding = () => {
-    const basePadding = padding !== undefined ? padding : 1;
+    // When no title is provided, use 0 padding (same as Ink Box)
+    // When title is provided, use padding to accommodate title positioning
+    const basePadding = padding !== undefined ? padding : hasTitle ? 1 : 0;
     return {
       top: paddingTop ?? paddingY ?? basePadding,
       bottom: paddingBottom ?? paddingY ?? basePadding,
@@ -387,18 +392,22 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
 
   const finalPadding = resolvePadding();
 
-  // Resolve gap properties (Ink compatible)
-  const resolvedGaps = {
-    row: rowGap ?? gap ?? 0,
-    column: columnGap ?? gap ?? 0,
-  };
+  // Resolve gap properties (Ink compatible) - used in title rendering
+  // const resolvedGaps = {
+  //   row: rowGap ?? gap ?? 0,
+  //   column: columnGap ?? gap ?? 0,
+  // };
 
   // Calculate resolved width (handle percentages)
+  // For titled boxes, we need a width for border rendering
   let resolvedWidth: number;
   if (parsedWidth.type === 'percent') {
     // For percentage, use a default container width (40) for now
     // In a real implementation, this would come from parent context
     resolvedWidth = Math.floor((40 * parsedWidth.value) / 100);
+  } else if (parsedWidth.type === 'auto' || parsedWidth.value === 0) {
+    // For auto or undefined width, use default only for titled boxes
+    resolvedWidth = hasTitle ? 40 : 0;
   } else {
     resolvedWidth = parsedWidth.value;
   }
@@ -446,80 +455,118 @@ export const TitleBox: React.FC<TitleBoxProps> = props => {
     finalPadding.left -
     finalPadding.right;
 
-  // Handle child content with flexbox-like behavior
+  // When no title is provided, delegate to Ink Box for perfect compatibility
+  if (!hasTitle) {
+    // Delegate to Ink Box for identical behavior
+    return (
+      <Box
+        {...(borderStyle && borderStyle !== 'ascii' && { borderStyle })}
+        {...(borderColor && { borderColor })}
+        {...(width && { width })}
+        {...(height && { height })}
+        {...(minWidth && { minWidth })}
+        {...(minHeight && { minHeight })}
+        {...(padding !== undefined && { padding })}
+        {...(paddingX !== undefined && { paddingX })}
+        {...(paddingY !== undefined && { paddingY })}
+        {...(paddingTop !== undefined && { paddingTop })}
+        {...(paddingBottom !== undefined && { paddingBottom })}
+        {...(paddingLeft !== undefined && { paddingLeft })}
+        {...(paddingRight !== undefined && { paddingRight })}
+        {...(margin !== undefined && { margin })}
+        {...(marginX !== undefined && { marginX })}
+        {...(marginY !== undefined && { marginY })}
+        {...(marginTop !== undefined && { marginTop })}
+        {...(marginBottom !== undefined && { marginBottom })}
+        {...(marginLeft !== undefined && { marginLeft })}
+        {...(marginRight !== undefined && { marginRight })}
+        {...(props.flexGrow !== undefined && { flexGrow: props.flexGrow })}
+        {...(props.flexShrink !== undefined && {
+          flexShrink: props.flexShrink,
+        })}
+        {...(flexDirection && { flexDirection })}
+        {...(props.flexBasis !== undefined && { flexBasis: props.flexBasis })}
+        {...(props.flexWrap && { flexWrap: props.flexWrap })}
+        {...(props.alignItems && { alignItems: props.alignItems })}
+        {...(props.alignSelf && { alignSelf: props.alignSelf })}
+        {...(justifyContent && { justifyContent })}
+        {...(gap !== undefined && { gap })}
+        {...(columnGap !== undefined && { columnGap })}
+        {...(rowGap !== undefined && { rowGap })}
+        {...(borderTop !== undefined && { borderTop })}
+        {...(borderBottom !== undefined && { borderBottom })}
+        {...(borderLeft !== undefined && { borderLeft })}
+        {...(borderRight !== undefined && { borderRight })}
+        {...(props.borderTopColor && { borderTopColor: props.borderTopColor })}
+        {...(props.borderBottomColor && {
+          borderBottomColor: props.borderBottomColor,
+        })}
+        {...(props.borderLeftColor && {
+          borderLeftColor: props.borderLeftColor,
+        })}
+        {...(props.borderRightColor && {
+          borderRightColor: props.borderRightColor,
+        })}
+        {...(props.borderDimColor !== undefined && {
+          borderDimColor: props.borderDimColor,
+        })}
+        {...(props.borderTopDimColor !== undefined && {
+          borderTopDimColor: props.borderTopDimColor,
+        })}
+        {...(props.borderBottomDimColor !== undefined && {
+          borderBottomDimColor: props.borderBottomDimColor,
+        })}
+        {...(props.borderLeftDimColor !== undefined && {
+          borderLeftDimColor: props.borderLeftDimColor,
+        })}
+        {...(props.borderRightDimColor !== undefined && {
+          borderRightDimColor: props.borderRightDimColor,
+        })}
+        {...(overflow && { overflow })}
+        {...(overflowX && { overflowX })}
+        {...(overflowY && { overflowY })}
+        {...(display && { display })}
+        {...(props.position && { position: props.position })}
+      >
+        {children}
+      </Box>
+    );
+  }
+
+  // Extract text content from React elements for title embedding
+  const extractTextFromReactElement = (element: React.ReactNode): string => {
+    if (typeof element === 'string') return element;
+    if (typeof element === 'number') return String(element);
+    if (React.isValidElement(element)) {
+      // For Text components, extract the children
+      if (element.props && element.props.children) {
+        return extractTextFromReactElement(element.props.children);
+      }
+      return '';
+    }
+    if (Array.isArray(element)) {
+      return element.map(extractTextFromReactElement).join('');
+    }
+    return '';
+  };
+
+  // Handle string content with title embedding
   let contentLines: string[] = [];
 
   if (children) {
-    // Convert children to string array for layout
-    const childrenString = String(children);
+    // Extract text content from React elements or use string directly
+    const childrenString = extractTextFromReactElement(children);
     contentLines = childrenString.split('\n');
-  } else if (title || titles) {
-    // Use title rendering for empty content
-    contentLines = [''];
+  } else {
+    // No content - empty box
+    contentLines = [];
   }
 
-  // Apply flexbox-like layout for multiple children
+  // Apply basic layout for children with title
   if (Array.isArray(children) && children.length > 1) {
-    // Simple flexbox simulation
+    // Simple layout for multiple children
     const childStrings = children.map(child => String(child));
-
-    if (flexDirection === 'row' || flexDirection === 'row-reverse') {
-      // Horizontal layout
-      let layoutLine = childStrings.join(' '.repeat(resolvedGaps.column));
-
-      if (flexDirection === 'row-reverse') {
-        layoutLine = childStrings
-          .reverse()
-          .join(' '.repeat(resolvedGaps.column));
-      }
-
-      // Apply justifyContent for horizontal alignment
-      if (justifyContent === 'center') {
-        const lineWidth = getStringWidth(layoutLine);
-        const padding = Math.floor((contentAreaWidth - lineWidth) / 2);
-        layoutLine = ' '.repeat(Math.max(0, padding)) + layoutLine;
-      } else if (justifyContent === 'flex-end') {
-        const lineWidth = getStringWidth(layoutLine);
-        const padding = contentAreaWidth - lineWidth;
-        layoutLine = ' '.repeat(Math.max(0, padding)) + layoutLine;
-      } else if (
-        justifyContent === 'space-between' &&
-        childStrings.length > 1
-      ) {
-        const totalChildWidth = childStrings.reduce(
-          (sum, child) => sum + getStringWidth(child),
-          0
-        );
-        const availableSpace = contentAreaWidth - totalChildWidth;
-        const spaceBetween = Math.floor(
-          availableSpace / (childStrings.length - 1)
-        );
-        layoutLine = childStrings.join(' '.repeat(Math.max(1, spaceBetween)));
-      }
-
-      contentLines = [layoutLine];
-    } else {
-      // Vertical layout (column)
-      contentLines = childStrings;
-
-      if (flexDirection === 'column-reverse') {
-        contentLines = contentLines.reverse();
-      }
-
-      // Add row gaps
-      if (resolvedGaps.row > 0 && contentLines.length > 1) {
-        const gappedLines: string[] = [];
-        contentLines.forEach((line, index) => {
-          gappedLines.push(line);
-          if (index < contentLines.length - 1) {
-            for (let i = 0; i < resolvedGaps.row; i++) {
-              gappedLines.push('');
-            }
-          }
-        });
-        contentLines = gappedLines;
-      }
-    }
+    contentLines = childStrings;
   }
 
   // Calculate final content height
